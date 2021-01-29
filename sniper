@@ -8,7 +8,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-VER="8.9"
+VER="9.0"
 INSTALL_DIR="/usr/share/sniper"
 LOOT_DIR="$INSTALL_DIR/loot/$TARGET"
 SNIPER_PRO=$INSTALL_DIR/pro.sh
@@ -17,6 +17,7 @@ SNIPER_PRO=$INSTALL_DIR/pro.sh
 service postgresql start 2> /dev/null
 
 # LOAD DEFAULT SNIPER CONFIGURATION FILE
+dos2unix $INSTALL_DIR/sniper.conf 2> /dev/null > /dev/null
 source $INSTALL_DIR/sniper.conf
 echo -e "$OKBLUE[*]$RESET Loaded configuration file from $INSTALL_DIR/sniper.conf $OKBLUE[$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
 
@@ -28,6 +29,7 @@ if [[ -f /root/.sniper.conf ]]; then
 
   if [[ -f /root/.sniper_api_keys.conf ]]; then
     # LOAD USER API KEYS (PERSISTENT CONFIG)
+    dos2unix /root/.sniper_api_keys.conf 2> /dev/null > /dev/null
     source /root/.sniper_api_keys.conf
     echo -e "$OKBLUE[*]$RESET Loaded API keys from /root/.sniper_api_keys.conf $OKBLUE[$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
   fi
@@ -35,6 +37,7 @@ if [[ -f /root/.sniper.conf ]]; then
 else
   # IF NO USER CONFIG PRESENT, CREATE IT FROM THE DEFAULT TEMPLATE
   cp $INSTALL_DIR/sniper.conf /root/.sniper.conf 2> /dev/null
+  dos2unix /root/.sniper.conf 2> /dev/null > /dev/null
   source /root/.sniper.conf
   echo -e "$OKBLUE[*]$RESET Loaded configuration file from /root/.sniper.conf $OKBLUE[$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
 fi
@@ -163,7 +166,12 @@ function check_update {
   if [[ "$ENABLE_AUTO_UPDATES" == "1" ]] && [[ "$ONLINE" == "1" ]]; then
     if [[ -f "$INSTALL_DIR/pro/settings.php" ]]; then
       LICENSE_KEY=$(grep "LICENSE_KEY" $INSTALL_DIR/pro/settings.php | cut -d\" -f2 2> /dev/null)
-      PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER" 2> /dev/null > /dev/null | bash - 2> /dev/null > /dev/null)
+      VERSION=$(grep 9.0 $INSTALL_DIR/pro.sh | wc -c)
+      if [[ $VERSION = "71" ]]; then
+        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/9.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
+      else
+        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
+      fi
     fi
     LATEST_VER=$(curl --connect-timeout 5 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
     if [[ "$LATEST_VER" != "$VER" ]]; then
@@ -184,9 +192,9 @@ function update {
       LICENSE_KEY=$(grep "LICENSE_KEY" $INSTALL_DIR/pro/settings.php | cut -d\" -f2 )
       VERSION=$(grep 9.0 $INSTALL_DIR/pro.sh | wc -c)
       if [[ $VERSION = "71" ]]; then
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/9.0/$LICENSE_KEY/updates.txt?ver=$VER" 2> /dev/null | bash - 2> /dev/null > /dev/null)
+        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/9.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
       else
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER" 2> /dev/null | bash - 2> /dev/null > /dev/null)
+        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
       fi
     fi
     LATEST_VER=$(curl --connect-timeout 5 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
@@ -213,7 +221,7 @@ fi
 
 # CHECK IF ONLINE
 function check_online {
-  ONLINE=$(curl --connect-timeout 3 --insecure -s "https://xerosecurity.com/community/updates.txt?$VER" 2> /dev/null)
+  ONLINE=$(curl --connect-timeout 3 --insecure -s "https://xerosecurity.com/community/updates.txt?$VER&mid=$(cat /etc/machine-id)" 2> /dev/null)
   if [[ -z "$ONLINE" ]]; then
     ONLINE=$(curl --connect-timeout 3 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
     if [[ -z "$ONLINE" ]]; then
@@ -246,7 +254,7 @@ case $key in
     echo -e "$OKBLUE[*]$RESET Creating backup of existing config to /root/.sniper.conf.bak...$OKBLUE[$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
     cp -f /root/.sniper.conf /root/.sniper.conf.bak
     echo -e "$OKBLUE[*]$RESET Copying $CONFIG to /root/.sniper.conf...$OKBLUE[$RESET${OKGREEN}OK${RESET}$OKBLUE]$RESET"
-    cp -f $CONFIG /root/.sniper.conf
+    cp -f $CONFIG /root/.sniper.conf 2> /dev/null
     dos2unix /root/.sniper.conf 2> /dev/null > /dev/null
     source /root/.sniper.conf
     sleep 1
@@ -365,7 +373,7 @@ case $key in
     rm -vf $WORKSPACE_DIR/scans/running_$TARGET_*.txt
     ls -lh $LOOT_DIR/scans/running_*.txt 2> /dev/null | wc -l 2> /dev/null > $WORKSPACE_DIR/scans/tasks-running.txt 2> /dev/null
     ps -ef | egrep "$TARGET|sniper"
-    ps -ef | egrep "sniper" | awk '{print $2}' | xargs -i sudo kill -9 {}
+    ps -ef | egrep "sniper" | awk '{print $2}' | xargs -i sudo kill -9 {} 
     exit
     shift # past argument
     ;;
@@ -391,7 +399,7 @@ case $key in
       exit
     fi
     echo "Archiving $WORKSPACE to $INSTALL_DIR/loot/$WORKSPACE.tar"
-    cd $INSTALL_DIR/loot/workspace/ && tar -cvf ../$WORKSPACE.tar $WORKSPACE
+    cd $INSTALL_DIR/loot/workspace/ && tar -cvf ../$WORKSPACE.tar $WORKSPACE 
     cp -Rf $WORKSPACE ${WORKSPACE}_`date +"%Y-%m-%d"`
     echo "Done!"
     exit
@@ -574,11 +582,11 @@ function loot {
       wc -l $LOOT_DIR/scans/notifications.txt 2> /dev/null | awk '{print $1}' > $LOOT_DIR/scans/notifications_total.txt 2> /dev/null
       wc -l $LOOT_DIR/scans/notifications_new.txt 2> /dev/null | awk '{print $1}' > $LOOT_DIR/scans/notifications_new_total.txt 2> /dev/null
       cat $LOOT_DIR/scans/tasks-running.txt 2> /dev/null > $LOOT_DIR/scans/tasks-running_total.txt 2> /dev/null
-      wc -l $LOOT_DIR/scans/tasks.txt 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/tasks_total.txt 2> /dev/null
-      wc -l $LOOT_DIR/scans/scheduled/*.sh 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/scheduled_tasks_total.txt 2> /dev/null
-      grep "Host\ status" $LOOT_DIR/scans/notifications.txt 2> /dev/null | wc -l | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/host_status_changes_total.txt 2> /dev/null
-      grep "Port\ change" $LOOT_DIR/scans/notifications.txt 2> /dev/null | wc -l | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/port_changes_total.txt 2> /dev/null
-      wc -l $LOOT_DIR/domains/domains_new-*.txt 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/domain_changes_total.txt 2> /dev/null
+      wc -l $LOOT_DIR/scans/tasks.txt 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/tasks_total.txt 2> /dev/null 
+      wc -l $LOOT_DIR/scans/scheduled/*.sh 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/scheduled_tasks_total.txt 2> /dev/null 
+      grep "Host\ status" $LOOT_DIR/scans/notifications.txt 2> /dev/null | wc -l | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/host_status_changes_total.txt 2> /dev/null 
+      grep "Port\ change" $LOOT_DIR/scans/notifications.txt 2> /dev/null | wc -l | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/port_changes_total.txt 2> /dev/null 
+      wc -l $LOOT_DIR/domains/domains_new-*.txt 2> /dev/null | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/domain_changes_total.txt 2> /dev/null 
       cat $LOOT_DIR/web/dirsearch-new-*.txt $LOOT_DIR/web/spider-new-*.txt 2> /dev/null | wc -l | awk '{print $1}' 2> /dev/null > $LOOT_DIR/scans/url_changes_total.txt 2> /dev/null
       if [[ -f "$LOOT_DIR/notes/notepad.html" ]]; then
         echo -n "" 2>/dev/null

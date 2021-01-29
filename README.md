@@ -10,61 +10,18 @@
 ## ABOUT:
 Sn1per Community Edition is an automated scanner that can be used during a penetration test to enumerate and scan for vulnerabilities. Sn1per Professional is Xero Security's premium reporting addon for Professional Penetration Testers, Bug Bounty Researchers and Corporate Security teams to manage large environments and pentest scopes. For more information regarding Sn1per Professional, go to https://xerosecurity.com.
 
-[![](https://xerosecurity.com/images/xerosecurity-sn1per1.PNG)](https://xerosecurity.com/)
+[![](https://xerosecurity.com/images/xerosecurity-sn1per1b.PNG)](https://xerosecurity.com/)
 [![](https://xerosecurity.com/images/xerosecurity-sn1per2.PNG)](https://xerosecurity.com/)
-[![](https://xerosecurity.com/images/xerosecurity-sn1per3.PNG)](https://www.youtube.com/watch?v=K-8QHDafhcA)
-[![](https://xerosecurity.com/images/xerosecurity-sn1per4.PNG)](https://xerosecurity.com/)
+[![](https://xerosecurity.com/images/xerosecurity-sn1per3.PNG)](https://www.youtube.com/watch?v=Fyi8eLm-5x8)
+[![](https://xerosecurity.com/images/xerosecurity-sn1per4b.PNG)](https://xerosecurity.com/)
 [![](https://xerosecurity.com/images/xerosecurity-sn1per5.PNG)](https://xerosecurity.com/)
 [![](https://xerosecurity.com/images/xerosecurity-sn1per6.PNG)](https://xerosecurity.com/)
-
-### Purchase Sn1per Professional:
-To obtain a Sn1per Professional license, go to https://xerosecurity.com.
-
-## SN1PER COMMUNITY FEATURES:
-- [x] Automatically collects basic recon (ie. whois, ping, DNS, etc.)
-- [x] Automatically launches Google hacking queries against a target domain
-- [x] Automatically enumerates open ports via NMap port scanning
-- [x] Automatically exploit common vulnerabilities
-- [x] Automatically brute forces sub-domains, gathers DNS info and checks for zone transfers
-- [x] Automatically checks for sub-domain hijacking
-- [x] Automatically runs targeted NMap scripts against open ports
-- [x] Automatically runs targeted Metasploit scan and exploit modules
-- [x] Automatically scans all web applications for common vulnerabilities
-- [x] Automatically brute forces ALL open services
-- [x] Automatically test for anonymous FTP access
-- [x] Automatically runs WPScan, Arachni and Nikto for all web services
-- [x] Automatically enumerates NFS shares
-- [x] Automatically test for anonymous LDAP access
-- [x] Automatically enumerate SSL/TLS ciphers, protocols and vulnerabilities
-- [x] Automatically enumerate SNMP community strings, services and users
-- [x] Automatically list SMB users and shares, check for NULL sessions and exploit MS08-067
-- [x] Automatically tests for open X11 servers
-- [x] Performs high level enumeration of multiple hosts and subnets
-- [x] Automatically integrates with Metasploit Pro, MSFConsole and Zenmap for reporting
-- [x] Automatically gathers screenshots of all web sites
-- [x] Create individual workspaces to store all scan output
-
-### Help Topics
-
-- [x] Github API integration (https://github.com/1N3/Sn1per/wiki/Github-API-Integration)
-- [x] Burpsuite Professional 2.x integration (https://github.com/1N3/Sn1per/wiki/Burpsuite-Professional-2.x-Integration)
-- [x] OWASP ZAP integration (https://github.com/1N3/Sn1per/wiki/OWASP-ZAP-Integration)
-- [x] Shodan API integration (https://github.com/1N3/Sn1per/wiki/Shodan-Integration)
-- [x] Censys API integration (https://github.com/1N3/Sn1per/wiki/Censys-API-Integration)
-- [x] Hunter.io API integration (https://github.com/1N3/Sn1per/wiki/Hunter.io-API-Integration)
-- [x] Metasploit integration (https://github.com/1N3/Sn1per/wiki/Metasploit-Integration)
-- [x] Nessus integration (https://github.com/1N3/Sn1per/wiki/Nessus-Integration)
-- [x] OpenVAS API integration (https://github.com/1N3/Sn1per/wiki/OpenVAS-Integration)
-- [x] Scheduled scans (https://github.com/1N3/Sn1per/wiki/Scheduled-Scans)
-- [x] Sc0pe Templates (https://github.com/1N3/Sn1per/wiki/Sc0pe-Templates)
-- [x] Slack API integration (https://github.com/1N3/Sn1per/wiki/Slack-API-Integration)
-- [x] WPScan API integration (https://github.com/1N3/Sn1per/wiki/WPScan-API-Integration)
-- [x] Sn1per Configuration Options (https://github.com/1N3/Sn1per/wiki/Sn1per-Configuration-Options)
-- [x] Sn1per Configuration Templates (https://github.com/1N3/Sn1per/wiki/Sn1per-Configuration-Options)
-- [x] Plugins & Tools (https://github.com/1N3/Sn1per/wiki/Plugins-&-Tools)
+[![](https://xerosecurity.com/images/Sn1per-Diagram.png)](https://xerosecurity.com/)
 
 ## KALI/UBUNTU/DEBIAN/PARROT LINUX INSTALL:
 ```
+git clone https://github.com/1N3/Sn1per
+cd Sn1per
 bash install.sh
 ```
 
@@ -173,7 +130,7 @@ sniper -c /path/to/sniper.conf -t <TARGET> -w <WORKSPACE_ALIAS>
 sniper -u|--update
 ```
 
-### MODES:
+## MODES:
 * **NORMAL:** Performs basic scan of targets and open ports using both active and passive checks for optimal performance.
 * **STEALTH:** Quickly enumerate single targets using mostly non-intrusive scans to avoid WAF/IPS blocking.
 * **FLYOVER:** Fast multi-threaded high level scans of multiple targets (useful for collecting high level data on many hosts quickly).
@@ -192,14 +149,34 @@ sniper -u|--update
 * **VULNSCAN:** Launches a OpenVAS vulnerability scan.
 * **MASSVULNSCAN:** Launches a "vulnscan" mode scans on multiple targets specified via the "-f" switch.
 
-## SAMPLE OUTPUT:
-https://gist.github.com/1N3/8214ec2da2c91691bcbc
+## HELP TOPICS:
+- [x] Plugins & Tools (https://github.com/1N3/Sn1per/wiki/Plugins-&-Tools)
+- [x] Scheduled scans (https://github.com/1N3/Sn1per/wiki/Scheduled-Scans)
+- [x] Sn1per Configuration Options (https://github.com/1N3/Sn1per/wiki/Sn1per-Configuration-Options)
+- [x] Sn1per Configuration Templates (https://github.com/1N3/Sn1per/wiki/Sn1per-Configuration-Templates)
+- [x] Sc0pe Templates (https://github.com/1N3/Sn1per/wiki/Sc0pe-Templates)
+
+## INTEGRATION GUIDES:
+- [x] Github API integration (https://github.com/1N3/Sn1per/wiki/Github-API-Integration)
+- [x] Burpsuite Professional 2.x integration (https://github.com/1N3/Sn1per/wiki/Burpsuite-Professional-2.x-Integration)
+- [x] OWASP ZAP integration (https://github.com/1N3/Sn1per/wiki/OWASP-ZAP-Integration)
+- [x] Shodan API integration (https://github.com/1N3/Sn1per/wiki/Shodan-Integration)
+- [x] Censys API integration (https://github.com/1N3/Sn1per/wiki/Censys-API-Integration)
+- [x] Hunter.io API integration (https://github.com/1N3/Sn1per/wiki/Hunter.io-API-Integration)
+- [x] Metasploit integration (https://github.com/1N3/Sn1per/wiki/Metasploit-Integration)
+- [x] Nessus integration (https://github.com/1N3/Sn1per/wiki/Nessus-Integration)
+- [x] OpenVAS API integration (https://github.com/1N3/Sn1per/wiki/OpenVAS-Integration)
+- [x] Slack API integration (https://github.com/1N3/Sn1per/wiki/Slack-API-Integration)
+- [x] WPScan API integration (https://github.com/1N3/Sn1per/wiki/WPScan-API-Integration)
 
 ## LICENSE:
 This software is free to distribute and use with the condition that credit is provided to the creator (@xer0dayz @XeroSecurity), is not renamed and is not for commercial use or resold and rebranded. Permission to distribute any part of the code for sale is strictly prohibited.
 
 ## LEGAL DISCLAIMER:
-You may not rent or lease, distribute, modify, sell or transfer the software to a third party. Sn1per Community is free for distribution, and modification with the condition that credit is provided to the creator and not used for commercial use. You may not use software for illegal or nefarious purposes. No liability for consequential damages to the maximum extent permitted by all applicable laws. In no event shall XeroSecurity or any person be liable for any consequential, reliance, incidental, special, direct or indirect damages whatsoever (including without limitation, damages for loss of business profits, business interruption, loss of business information, personal injury, or any other loss) arising out of or in connection with the use or inability to use this product, even if XeroSecurity has been advised of the possibility of such damages. 
+You may not rent or lease, distribute, modify, sell or transfer the software to a third party. Sn1per Community is free for distribution, and modification with the condition that credit is provided to the creator and not used for commercial use. You may not use software for illegal or nefarious purposes. No liability for consequential damages to the maximum extent permitted by all applicable laws. In no event shall XeroSecurity or any person be liable for any consequential, reliance, incidental, special, direct or indirect damages whatsoever (including without limitation, damages for loss of business profits, business interruption, loss of business information, personal injury, or any other loss) arising out of or in connection with the use or inability to use this product, even if XeroSecurity has been advised of the possibility of such damages.
 
 ## COPYRIGHT:
 The software code and logos are owned by XeroSecurity and protected by United States copyright and/or patent laws of international treaty provisions. All rights reserved.
+
+## PURCHASE SN1PER PROFESSIONAL:
+To obtain a Sn1per Professional license, go to https://xerosecurity.com.

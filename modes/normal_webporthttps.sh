@@ -57,8 +57,9 @@ if [[ "$MODE" = "web" ]]; then
     fi
   fi
   if [[ "$INJECTX" == "1" ]]; then
-    rm -f $LOOT_DIR/web/injectx-$TARGET-https.txt 2> /dev/null
-    for a in `cat $LOOT_DIR/web/spider-$TARGET.txt 2> /dev/null | grep '?' | grep "https\:" | cut -d '?' -f2 | cut -d '=' -f1 | sort -u`; do for b in `grep $a $LOOT_DIR/web/spider-$TARGET.txt 2> /dev/null | grep "https\:" | head -n 1`; do injectx.py -u $b -vy | tee -a $LOOT_DIR/web/injectx-$TARGET-https.txt; done; done;
+    rm -f $LOOT_DIR/web/injectx-$TARGET-https.raw 2> /dev/null
+    for a in `cat $LOOT_DIR/web/spider-$TARGET.txt 2> /dev/null | grep '?' | grep "https\:" | cut -d '?' -f2 | cut -d '=' -f1 | sort -u`; do for b in `grep $a $LOOT_DIR/web/spider-$TARGET.txt 2> /dev/null | grep "https\:" | head -n 1`; do injectx.py -u $b -vy | tee -a $LOOT_DIR/web/injectx-$TARGET-https.raw; done; done;
+    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/injectx-$TARGET-https.raw 2> /dev/null > $LOOT_DIR/web/injectx-$TARGET-https.txt
   fi
   source $INSTALL_DIR/modes/static-grep-search.sh
   if [[ "$WEB_JAVASCRIPT_ANALYSIS" == "1" ]]; then
@@ -137,16 +138,19 @@ if [[ "$MODE" = "web" ]]; then
       echo -e "$OKRED RUNNING WORDPRESS VULNERABILITY SCAN $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       if [[ "$WP_API_KEY" ]]; then
-        wpscan --url https://$TARGET --no-update --disable-tls-checks --api-key $WP_API_KEY 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-httpsa.txt
+        wpscan --url https://$TARGET --no-update --disable-tls-checks --api-token $WP_API_KEY 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-https-port443a.txt
         echo ""
-        wpscan --url https://$TARGET/wordpress/ --no-update --disable-tls-checks --api-key $WP_API_KEY 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-httpsb.txt
+        wpscan --url https://$TARGET/wordpress/ --no-update --disable-tls-checks --api-token $WP_API_KEY 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-https-port443b.txt
         echo ""
       else
-        wpscan --url https://$TARGET --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-httpsa.txt
+        wpscan --url https://$TARGET --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-https-port443a.txt
         echo ""
-        wpscan --url https://$TARGET/wordpress/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-httpsb.txt
+        wpscan --url https://$TARGET/wordpress/ --no-update --disable-tls-checks 2> /dev/null | tee $LOOT_DIR/web/wpscan-$TARGET-https-port443b.txt
         echo ""
       fi
+      sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/wpscan-$TARGET-https-port443a.raw 2> /dev/null > $LOOT_DIR/web/wpscan-$TARGET-https-port443a.txt
+      sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/wpscan-$TARGET-https-port443b.raw 2> /dev/null > $LOOT_DIR/web/wpscan-$TARGET-https-port443b.txt
+      rm -f $LOOT_DIR/web/wpscan-$TARGET-http*.raw 2> /dev/null
   fi
   if [[ "$NIKTO" == "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -176,6 +180,12 @@ if [[ "$MODE" = "web" ]]; then
     echo -e "$OKRED RUNNING HTTP REQUEST SMUGGLING DETECTION $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     python3 /usr/share/sniper/plugins/smuggler/smuggler.py --no-color -u https://$TARGET | tee $LOOT_DIR/web/smuggler-$TARGET-port443.txt
+  fi
+  if [[ "$NUCLEI" = "1" ]]; then
+    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
+    echo -e "$OKRED RUNNING NUCLEI SCAN $RESET"
+    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
+    nuclei -silent -t /usr/share/sniper/plugins/nuclei-templates/ -c $THREADS -target https://$TARGET -o $LOOT_DIR/web/nuclei-https-10.0.0.19-port443.txt 
   fi
   rm -f $LOOT_DIR/scans/running_${TARGET}_${MODE}.txt 2> /dev/null
   ls -lh $LOOT_DIR/scans/running_*.txt 2> /dev/null | wc -l 2> /dev/null > $LOOT_DIR/scans/tasks-running.txt
